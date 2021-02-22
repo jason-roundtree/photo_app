@@ -10,13 +10,14 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.get('/photos', (req, res) => {
     cloudinary
         .search
-        .expression('resource_type:image')
+        .with_field('context')
         .max_results(3)
         .execute()
         .then(result => {
             console.log('photos: ', result)
             res.json(result) 
         })
+        .catch(err => console.log('error: ', err))
 })
 
 const server = app.listen(process.env.PORT || 9000, () => {
