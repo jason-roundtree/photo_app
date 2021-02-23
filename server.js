@@ -2,10 +2,12 @@ require('dotenv').config()
 const cloudinary = require('cloudinary').v2
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors())
 
 app.get('/folders', (req, res) => {
     cloudinary
@@ -19,10 +21,10 @@ app.get('/folders', (req, res) => {
         })
 })
 
-app.get('/folder/:name', (req, res) => {
+app.get('/folder/:folderPath', (req, res) => {
     cloudinary
         .search
-        .expression(`folder=outdoors/${req.params.name}`)
+        .expression(`folder/${req.params.folderPath}`)
         .execute()
         .then(result => {
             console.log('folder: ', result)
@@ -34,7 +36,7 @@ app.get('/photos', (req, res) => {
     cloudinary
         .search
         .with_field('context')
-        .max_results(3)
+        .max_results(25)
         .execute()
         .then(result => {
             console.log('photos: ', result)
