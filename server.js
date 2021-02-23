@@ -5,7 +5,30 @@ const bodyParser = require('body-parser')
 
 const app = express()
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
+
+app.get('/folders', (req, res) => {
+    cloudinary
+        .api
+        .sub_folders('outdoors', (err, _res) => {
+            if (!err) {
+                res.json(_res)
+            } else {
+                console.log('error fetching subfolders: ', err)
+            }
+        })
+})
+
+app.get('/folder/:name', (req, res) => {
+    cloudinary
+        .search
+        .expression(`folder=outdoors/${req.params.name}`)
+        .execute()
+        .then(result => {
+            console.log('folder: ', result)
+            res.json(result) 
+        })
+})
 
 app.get('/photos', (req, res) => {
     cloudinary
