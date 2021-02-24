@@ -32,7 +32,6 @@
 	{/await} -->
 </div>
 
-
 <style>
 	img {
 		object-fit: contain;
