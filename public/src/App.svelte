@@ -50,28 +50,34 @@
 							}]
 						} 
 					})
-					// console.log('photoAlbumsData: ', photoAlbumsData)
+					console.log('photoAlbumsData: ', photoAlbumsData)
 				})
 		})
 </script>
 
 <main>
 	<h1>My Photo Albums</h1>
-	{#each photoAlbumsData as photoAlbumPreview}
-		<img 
-			src={photoAlbumPreview.previewImgUrl} 
-			alt={`My photo from Plummer Peak Trail`}
-			width='300px'
-			height='300px'
-		/>
-	{/each}
+
+	<div class='album_previews_grid_container'>
+		{#each photoAlbumsData as photoAlbumPreview}
+			<div class='album_preview_container'>
+				<img 
+					src={photoAlbumPreview.previewImgUrl} 
+					alt={`My photo from Plummer Peak Trail`}
+					width='300px'
+					height='300px'
+				/>
+			</div>
+		{/each}
+	</div>	
+
 </main>
 
 <style>
 	main {
-		text-align: center;
+		/* text-align: center; */
 		padding: 1em;
-		margin: 0 auto;
+		/* margin: 0 auto; */
 	}
 
 	h1 {
@@ -81,9 +87,33 @@
 		font-weight: 100;
 	}
 
-	/* @media (min-width: 640px) {
-		main {
-			max-width: none;
+	.album_previews_grid_container {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 10px 10px;
+	}
+
+	.album_preview_container {
+		justify-self: center;
+		place-self: center;
+	}
+
+	/* @media (max-width: 1024px) {
+		.album_grid_container {
+			grid-template-columns: 1fr 1fr 1fr;
 		}
 	} */
+
+	@media (max-width: 769px) {
+		.album_grid_container {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (max-width: 690px) {
+		.album_grid_container {
+			grid-template-columns: 1fr;
+		}
+	}
+
 </style>

@@ -15,7 +15,7 @@
 	// let promise = getPhotos()
 </script>
 
-<div class='photo_album_group_container'>
+<div>
 	<!-- {#await promise}
 	<p>...loading</p>
 	{:then photos}
