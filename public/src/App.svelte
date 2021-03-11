@@ -23,6 +23,7 @@
 			const res = await fetch(`http://localhost:9000/folder/${folderName}`)
 			// TODO: move this logic checking the response to it's own util function?
 			if (res.ok) {
+				console.log('getPhotoAlbum res: ', res)
 				return res.json()
 			} else {
 				throw new Error(res)
@@ -41,13 +42,18 @@
 			// console.log('fullAlbumPromises: ', fullAlbumPromises)
 			Promise.all(fullAlbumPromises)
 				.then(fullFolderData => {
-					// console.log('fullFolderData: ', fullFolderData)
 					fullFolderData.forEach(({ resources }) => {
 						if (resources.length) {
-							photoAlbumsData = [...photoAlbumsData, {
-								previewImgUrl: resources[0].url,
-								folder: resources[0],
-							}]
+							// console.log('folder context: ', resources[0].context)
+							// TODO: uncomment once you tag the photos you want to preview from each folder (the first image for one folder is currently private). Also, remove array index from `resources` since you'll be query the images directly
+							// if (!resources[0].context.isPrivate) {
+									photoAlbumsData = [...photoAlbumsData, {
+									previewImgUrl: resources[0].url,
+									// TODO: remove folder if you end up not being able to assign metacontext to it
+									folder: resources[0],
+									imgContext: resources[0].context || null
+								}]
+							// }
 						} 
 					})
 					console.log('photoAlbumsData: ', photoAlbumsData)
@@ -59,10 +65,12 @@
 	<h1>My Photo Albums</h1>
 
 	<div class='album_previews_grid_container'>
-		{#each photoAlbumsData as photoAlbumPreview}
+		{#each photoAlbumsData as { previewImgUrl, imgContext }}
 			<div class='album_preview_container'>
+				<p class='album_name'>{imgContext.display_location}</p>
+				<p class='album_date'>{imgContext.date}</p>
 				<img 
-					src={photoAlbumPreview.previewImgUrl} 
+					src={previewImgUrl} 
 					alt={`My photo from Plummer Peak Trail`}
 					width='300px'
 					height='300px'
@@ -89,7 +97,7 @@
 
 	.album_previews_grid_container {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
+		/* grid-template-columns: 1fr 1fr; */
 		gap: 10px 10px;
 	}
 
@@ -98,22 +106,30 @@
 		place-self: center;
 	}
 
+	.album_name {
+		margin: 15px 0 5px;
+	}
+
+	.album_date {
+		margin-bottom: 5px;
+	}
+
 	/* @media (max-width: 1024px) {
 		.album_grid_container {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
 	} */
 
-	@media (max-width: 769px) {
-		.album_grid_container {
+	/* @media (max-width: 769px) {
+		.album_previews_grid_container {
 			grid-template-columns: 1fr 1fr;
 		}
 	}
 
 	@media (max-width: 690px) {
-		.album_grid_container {
+		.album_previews_grid_container {
 			grid-template-columns: 1fr;
 		}
-	}
+	} */
 
 </style>

@@ -24,10 +24,11 @@ app.get('/folders', (req, res) => {
 app.get('/folder/:folderPath', (req, res) => {
     cloudinary
         .search
+        .with_field('context')
         .expression(`folder/${req.params.folderPath}`)
         .execute()
         .then(result => {
-            console.log('folder: ', result)
+            // console.log('folder: ', result)
             res.json(result) 
         })
 })
@@ -36,10 +37,10 @@ app.get('/photos', (req, res) => {
     cloudinary
         .search
         .with_field('context')
-        .max_results(25)
+        .max_results(5)
         .execute()
         .then(result => {
-            console.log('photos: ', result)
+            // console.log('photos: ', result)
             res.json(result) 
         })
         .catch(err => console.log('error: ', err))
