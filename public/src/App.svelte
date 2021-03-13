@@ -35,13 +35,14 @@
 
 	getPhotoAlbumNames()
 		.then(({ folders }) => {
-			// console.log('folders: ', folders)
+			console.log('folders: ', folders)
 			const fullAlbumPromises = folders.map(({ name }) => {
 				return getPhotoAlbum(name)
 			})
 			// console.log('fullAlbumPromises: ', fullAlbumPromises)
 			Promise.all(fullAlbumPromises)
 				.then(fullFolderData => {
+					console.log('fullFolderData: ', fullFolderData)
 					fullFolderData.forEach(({ resources }) => {
 						if (resources.length) {
 							// console.log('folder context: ', resources[0].context)

@@ -10,10 +10,12 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
 app.get('/folders', (req, res) => {
+    console.log('get folders')
     cloudinary
         .api
         .sub_folders('outdoors', (err, _res) => {
             if (!err) {
+                // console.log('get folders _res: ', _res)
                 res.json(_res)
             } else {
                 console.log('error fetching subfolders: ', err)
@@ -24,20 +26,21 @@ app.get('/folders', (req, res) => {
 app.get('/folder/:folderPath', (req, res) => {
     cloudinary
         .search
+        .expression(`outdoors/${req.params.folderPath}/*`)
         .with_field('context')
-        .expression(`folder/${req.params.folderPath}`)
         .execute()
         .then(result => {
-            // console.log('folder: ', result)
+            // console.log('folder path result: ', result)
             res.json(result) 
         })
 })
 
 app.get('/photos', (req, res) => {
+    // console.log('get photos')
     cloudinary
         .search
         .with_field('context')
-        .max_results(5)
+        .max_results()
         .execute()
         .then(result => {
             // console.log('photos: ', result)
