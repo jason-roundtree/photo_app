@@ -65,11 +65,9 @@
 <main>
 	<h1>My Photo Albums</h1>
 
-	<div class='album_previews_grid_container'>
-		{#each photoAlbumsData as { previewImgUrl, imgContext }}
-			<div class='album_preview_container'>
-				<p class='album_name'>{imgContext.display_location}</p>
-				<p class='album_date'>{imgContext.date}</p>
+	{#each photoAlbumsData as { previewImgUrl, imgContext }}
+		<div class='album_preview_grid_container'>
+			<div class='album_image'>
 				<img 
 					src={previewImgUrl} 
 					alt={`My photo from Plummer Peak Trail`}
@@ -77,8 +75,13 @@
 					height='300px'
 				/>
 			</div>
-		{/each}
-	</div>	
+
+			<div class='album_description'>
+				<p class='album_name'>{imgContext.display_location}</p>
+				<p class='album_date'>{imgContext.date}</p>
+			</div>
+		</div>
+	{/each}
 
 </main>
 
@@ -96,15 +99,16 @@
 		font-weight: 100;
 	}
 
-	.album_previews_grid_container {
+	.album_preview_grid_container {
 		display: grid;
-		/* grid-template-columns: 1fr 1fr; */
-		gap: 10px 10px;
+		grid-template-columns: 1fr 4fr;
+		/* gap: 10px 10px; */
 	}
 
-	.album_preview_container {
+	.album_description {
 		justify-self: center;
 		place-self: center;
+		font-size: 2em;
 	}
 
 	.album_name {
