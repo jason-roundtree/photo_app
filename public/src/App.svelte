@@ -67,14 +67,12 @@
 
 	{#each photoAlbumsData as { previewImgUrl, imgContext }}
 		<div class='album_preview_grid_container'>
-			<div class='album_image'>
-				<img 
-					src={previewImgUrl} 
-					alt={`My photo from Plummer Peak Trail`}
-					width='300px'
-					height='300px'
-				/>
-			</div>
+			<img 
+				src={previewImgUrl} 
+				alt={`My photo from Plummer Peak Trail`}
+				width='300px'
+				class='album_image'
+			/>
 
 			<div class='album_description'>
 				<p class='album_name'>{imgContext.display_location}</p>
@@ -99,10 +97,20 @@
 		font-weight: 100;
 	}
 
+	img {
+		object-fit: contain;
+	}
+
+	.album_image {
+		align-self: stretch;
+	}
+
 	.album_preview_grid_container {
 		display: grid;
 		grid-template-columns: 1fr 4fr;
-		/* gap: 10px 10px; */
+		box-shadow: 1px 1px 5px 0 rgb(244, 235, 235);
+		border: 1px solid rgb(244, 235, 235);
+		margin-top: 10px;
 	}
 
 	.album_description {

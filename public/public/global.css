@@ -15,7 +15,7 @@ body {
 	padding: 8px;
 	box-sizing: border-box;
 	/* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; */
-	font-family: 'Staatliches', cursive;
+	font-family: 'Staatliches', sans-serif;
 	text-align: center;
 }
 
@@ -69,11 +69,9 @@ button:focus {
 	border-color: #666;
 }
 
-.photo_album_group_container {
+/* .photo_album_group_container {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-	/* grid-template-rows: masonry; */
 	justify-items: center;
 	gap: 10px;
-	/* grid-auto-flow: dense; */
-}
+} */
