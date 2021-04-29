@@ -1,7 +1,7 @@
 <script>
 	let photoAlbumsData = []
 
-	async function getPhotoAlbumNames() {
+	async function getPhotoAlbumsFolderInfo() {
 		try {
 			const res = await fetch('http://localhost:9000/folders')
 			// TODO: move this logic checking the response to it's own util function?
@@ -33,33 +33,52 @@
 		}
 	}
 
-	getPhotoAlbumNames()
-		.then(({ folders }) => {
-			console.log('folders: ', folders)
-			const fullAlbumPromises = folders.map(({ name }) => {
-				return getPhotoAlbum(name)
-			})
-			// console.log('fullAlbumPromises: ', fullAlbumPromises)
-			Promise.all(fullAlbumPromises)
-				.then(fullFolderData => {
-					console.log('fullFolderData: ', fullFolderData)
-					fullFolderData.forEach(({ resources }) => {
-						if (resources.length) {
-							// console.log('folder context: ', resources[0].context)
-							// TODO: uncomment once you tag the photos you want to preview from each folder (the first image for one folder is currently private). Also, remove array index from `resources` since you'll be query the images directly
-							// if (!resources[0].context.isPrivate) {
-									photoAlbumsData = [...photoAlbumsData, {
-									previewImgUrl: resources[0].url,
-									// TODO: remove folder if you end up not being able to assign metacontext to it
-									folder: resources[0],
-									imgContext: resources[0].context || null
-								}]
-							// }
-						} 
-					})
-					console.log('photoAlbumsData: ', photoAlbumsData)
-				})
+	function getPhotoAlbumsData(photoAlbumsFolderInfo) {
+		const allAlbumsPromises = photoAlbumsFolderInfo.map(({ name }) => {
+			return getPhotoAlbum(name)
 		})
+		Promise.all(allAlbumsPromises)
+			.then(fullFolderData => {
+				console.log('fullFolderData: ', fullFolderData)
+				fullFolderData.forEach(({ resources }) => {
+					if (resources.length) {
+						// console.log('folder context: ', resources[0].context)
+						// TODO: uncomment once you tag the photos you want to preview from each folder (the first image for one folder is currently private). Also, remove array index from `resources` since you'll be query the images directly
+						// if (!resources[0].context.isPrivate) {
+								photoAlbumsData = [...photoAlbumsData, {
+								previewImgUrl: resources[0].url,
+								// TODO: remove folder if you end up not being able to assign metacontext to it
+								folder: resources[0],
+								imgContext: resources[0].context || null
+							}]
+						// }
+					} 
+				})
+			})
+		console.log('photoAlbumsData: ', photoAlbumsData)
+	}
+
+	function checkLocalStorage() {
+		const folderInfo = JSON.parse(localStorage.getItem('photoAlbumFolderInfo'))
+		console.log('folderInfo: ', folderInfo)
+		if (!folderInfo) {
+			console.log('no folder info in storage')
+			getPhotoAlbumsFolderInfo()
+				.then(({ folders }) => {
+					console.log('folders: ', folders)
+					localStorage.setItem('photoAlbumFolderInfo', JSON.stringify(folders))
+					// console.log(`photoAlbumsFolderInfo: `, photoAlbumsFolderInfo)
+					getPhotoAlbumsData(folders) 
+				})
+				
+		} else { 
+			console.log('folder info already in storage')
+			getPhotoAlbumsData(folderInfo) 
+		}
+	}
+	
+	checkLocalStorage()
+
 </script>
 
 <main>
