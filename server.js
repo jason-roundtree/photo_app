@@ -1,12 +1,10 @@
 require('dotenv').config()
 const cloudinary = require('cloudinary').v2
 const express = require('express')
-const bodyParser = require('body-parser')
 const cors = require('cors')
-
 const app = express()
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
 app.get('/folders', (req, res) => {
@@ -23,10 +21,11 @@ app.get('/folders', (req, res) => {
         })
 })
 
-app.get('/folder/:folderPath', (req, res) => {
+app.get('/album/:category/:name', (req, res) => {
+    console.log('/album/:category/:name ', req.params.name)
     cloudinary
         .search
-        .expression(`outdoors/${req.params.folderPath}/*`)
+        .expression(`${req.params.category}/${req.params.name}/*`)
         .with_field('context')
         .execute()
         .then(result => {
@@ -35,19 +34,19 @@ app.get('/folder/:folderPath', (req, res) => {
         })
 })
 
-app.get('/photos', (req, res) => {
-    // console.log('get photos')
-    cloudinary
-        .search
-        .with_field('context')
-        .max_results()
-        .execute()
-        .then(result => {
-            // console.log('photos: ', result)
-            res.json(result) 
-        })
-        .catch(err => console.log('error: ', err))
-})
+// app.get('/photos', (req, res) => {
+//     console.log('get photos')
+//     cloudinary
+//         .search
+//         .with_field('context')
+//         .max_results()
+//         .execute()
+//         .then(result => {
+//             // console.log('photos: ', result)
+//             res.json(result) 
+//         })
+//         .catch(err => console.log('error: ', err))
+// })
 
 const server = app.listen(process.env.PORT || 9000, () => {
     console.log('Listening on port %d', server.address().port)

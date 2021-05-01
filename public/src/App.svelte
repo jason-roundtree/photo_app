@@ -1,6 +1,7 @@
 <script>
-	let photoAlbumsData = []
-
+	let photoAlbumsPreviewData = []
+	let allPhotoAlbumsData = []
+	
 	async function getPhotoAlbumsFolderInfo() {
 		try {
 			const res = await fetch('http://localhost:9000/folders')
@@ -18,59 +19,65 @@
 	// TODO: add custom meta context for image from each album that i want to preview?
 	// TODO: add custom meta context for album name formatted to be displayed
 	// TODO: how to directly query for only the first image from server api?
-	async function getPhotoAlbum(folderName) {
+	async function getPhotoAlbum(folderPath) {
+		const category = folderPath.split('/')[0]
+		const name = folderPath.split('/')[1]
 		try {
-			const res = await fetch(`http://localhost:9000/folder/${folderName}`)
+			const res = await fetch(`http://localhost:9000/album/${category}/${name}`)
 			// TODO: move this logic checking the response to it's own util function?
 			if (res.ok) {
-				console.log('getPhotoAlbum res: ', res)
+				// console.log('getPhotoAlbum res: ', res)
 				return res.json()
 			} else {
 				throw new Error(res)
 			}
 		} catch(err) {
-			console.log(`error fetching ${folderName} folder: `, err)
+			console.log(`error fetching ${folderPath} folder: `, err)
 		}
 	}
 
 	function getPhotoAlbumsData(photoAlbumsFolderInfo) {
-		const allAlbumsPromises = photoAlbumsFolderInfo.map(({ name }) => {
-			return getPhotoAlbum(name)
+		const allAlbumsPromises = photoAlbumsFolderInfo.map(({ path }) => {
+			console.log(`path`, path)
+			return getPhotoAlbum(path)
 		})
 		Promise.all(allAlbumsPromises)
 			.then(fullFolderData => {
-				console.log('fullFolderData: ', fullFolderData)
-				fullFolderData.forEach(({ resources }) => {
-					if (resources.length) {
-						// console.log('folder context: ', resources[0].context)
-						// TODO: uncomment once you tag the photos you want to preview from each folder (the first image for one folder is currently private). Also, remove array index from `resources` since you'll be query the images directly
-						// if (!resources[0].context.isPrivate) {
-								photoAlbumsData = [...photoAlbumsData, {
-								previewImgUrl: resources[0].url,
-								// TODO: remove folder if you end up not being able to assign metacontext to it
-								folder: resources[0],
-								imgContext: resources[0].context || null
-							}]
-						// }
-					} 
-				})
+				allPhotoAlbumsData = fullFolderData
+				console.log('allPhotoAlbumsData: ', allPhotoAlbumsData)
+				handleFilterPreviews()
 			})
-		console.log('photoAlbumsData: ', photoAlbumsData)
+	}
+
+	function handleFilterPreviews() {
+		allPhotoAlbumsData.forEach(({ resources }) => {
+			if (resources.length) {
+				// console.log('folder context: ', resources[0].context)
+				// TODO: uncomment once you tag the photos you want to preview from each folder (the first image for one folder is currently private). Also, remove array index from `resources` since you'll be query the images directly
+				if (!resources[0].context.isPrivate) {
+					photoAlbumsPreviewData = [...photoAlbumsPreviewData, {
+						previewImgUrl: resources[0].url,
+						// TODO: remove folder if you end up not being able to assign metacontext to it
+						folderPath: resources[0].folder,
+						imgContext: resources[0].context || null
+					}]
+				}
+			} 
+		})
+		console.log('photoAlbumsPreviewData: ', photoAlbumsPreviewData)
 	}
 
 	function checkLocalStorage() {
 		const folderInfo = JSON.parse(localStorage.getItem('photoAlbumFolderInfo'))
-		console.log('folderInfo: ', folderInfo)
+		// console.log(`folderInfo: `, folderInfo)
 		if (!folderInfo) {
 			console.log('no folder info in storage')
 			getPhotoAlbumsFolderInfo()
 				.then(({ folders }) => {
-					console.log('folders: ', folders)
 					localStorage.setItem('photoAlbumFolderInfo', JSON.stringify(folders))
 					// console.log(`photoAlbumsFolderInfo: `, photoAlbumsFolderInfo)
 					getPhotoAlbumsData(folders) 
 				})
-				
 		} else { 
 			console.log('folder info already in storage')
 			getPhotoAlbumsData(folderInfo) 
@@ -78,14 +85,16 @@
 	}
 	
 	checkLocalStorage()
-
 </script>
 
 <main>
 	<h1>My Photo Albums</h1>
 
-	{#each photoAlbumsData as { previewImgUrl, imgContext }}
-		<div class='album_preview_grid_container'>
+	{#each photoAlbumsPreviewData as { previewImgUrl, folderPath, imgContext }}
+		<a 
+			href={`/album/${folderPath}`} 
+			class='album_preview_grid_container'
+		>
 			<img 
 				src={previewImgUrl} 
 				alt={`My photo from Plummer Peak Trail`}
@@ -97,7 +106,7 @@
 				<p class='album_name'>{imgContext.display_location}</p>
 				<p class='album_date'>{imgContext.date}</p>
 			</div>
-		</div>
+		</a>
 	{/each}
 
 </main>
